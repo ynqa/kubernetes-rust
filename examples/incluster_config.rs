@@ -20,7 +20,8 @@ fn main() {
         None,
         None,
         None,
-    ).expect("failed to define list pod");
+    )
+    .expect("failed to define list pod");
     let list_pod = kubeclient
         .request::<v1::PodList>(req)
         .expect("failed to list up pods");

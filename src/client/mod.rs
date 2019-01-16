@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use failure::Error;
-use k8s_openapi::http;
+use http;
 use serde::de::DeserializeOwned;
 
 use super::config::Configuration;
@@ -32,7 +32,8 @@ impl APIClient {
             other => {
                 return Err(Error::from(format_err!("Invalid method: {}", other)));
             }
-        }.body(body);
+        }
+        .body(body);
 
         req.send()?.json().map_err(Error::from)
     }

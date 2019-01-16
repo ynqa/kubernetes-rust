@@ -5,7 +5,7 @@ extern crate serde_derive;
 
 extern crate base64;
 extern crate dirs;
-extern crate k8s_openapi;
+extern crate http;
 extern crate openssl;
 extern crate reqwest;
 extern crate serde;
