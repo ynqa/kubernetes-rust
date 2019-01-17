@@ -7,22 +7,9 @@ use base64;
 use failure::Error;
 use reqwest::{header, Certificate, Client, Identity};
 
+use kubernetes_apis::apis::configuration::Configuration;
+
 use self::kube_config::KubeConfigLoader;
-
-/// Configuration stores kubernetes path and client for requests.
-pub struct Configuration {
-    pub base_path: String,
-    pub client: Client,
-}
-
-impl Configuration {
-    pub fn new(base_path: String, client: Client) -> Self {
-        Configuration {
-            base_path: base_path.to_owned(),
-            client: client,
-        }
-    }
-}
 
 /// Returns a config includes authentication and cluster information from kubeconfig file.
 ///
@@ -82,10 +69,18 @@ pub fn load_kube_config() -> Result<Configuration, Error> {
 
     let client_builder = client_builder.default_headers(headers);
 
-    Ok(Configuration::new(
-        loader.cluster.server,
-        client_builder.build()?,
-    ))
+    Ok(Configuration {
+        base_path: loader.cluster.server,
+        client: client_builder.build()?,
+        user_agent: None,
+        basic_auth: None,
+        oauth_access_token: None,
+        api_key: None,
+    })
+    // Ok(Configuration::new(
+    //     loader.cluster.server,
+    //     client_builder.build()?,
+    // ))
 }
 
 /// Returns a config which is used by clients within pods on kubernetes.
@@ -119,5 +114,13 @@ pub fn incluster_config() -> Result<Configuration, Error> {
         .add_root_certificate(req_ca)
         .default_headers(headers);
 
-    Ok(Configuration::new(server, client_builder.build()?))
+    Ok(Configuration {
+        base_path: server,
+        client: client_builder.build()?,
+        user_agent: None,
+        basic_auth: None,
+        oauth_access_token: None,
+        api_key: None,
+    })
+    // Ok(Configuration::new(server, client_builder.build()?))
 }

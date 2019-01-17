@@ -1,0 +1,10 @@
+# IoK8sApiCoreV1NodeDaemonEndpoints
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**kubelet_endpoint** | [***::models::IoK8sApiCoreV1DaemonEndpoint**](io.k8s.api.core.v1.DaemonEndpoint.md) |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

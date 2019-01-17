@@ -18,8 +18,10 @@ serde = "1.0.79"
 serde_derive = "1.0.79"
 serde_yaml = "0.8.5"
 openssl = "0.10.12"
-http = "0.1.14"
 
 [dev-dependencies]
 tempfile = "3.0.4"
-k8s-openapi = { git = "https://github.com/Arnavion/k8s-openapi-codegen", tag = "v0.3.0", features = ["v1_10"] }
+
+[dependencies.kubernetes-apis]
+version = "1.13.2"
+path = "kubernetes-apis"
