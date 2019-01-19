@@ -24,7 +24,7 @@ impl Configuration {
     }
 }
 
-/// Returns a config includes authentication and cluster infomation from kubeconfig file.
+/// Returns a config includes authentication and cluster information from kubeconfig file.
 ///
 /// # Example
 /// ```no_run
