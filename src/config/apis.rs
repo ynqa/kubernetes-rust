@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::path::Path;
+use std::collections::HashMap;
 
 use failure::Error;
 use serde_yaml;
@@ -87,6 +88,16 @@ pub struct AuthInfo {
     pub impersonate: Option<String>,
     #[serde(rename = "as-groups")]
     pub impersonate_groups: Option<Vec<String>>,
+
+    #[serde(rename = "auth-provider")]
+    pub auth_provider: Option<AuthProviderConfig>,
+}
+
+/// AuthProviderConfig stores auth for specified cloud provider
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AuthProviderConfig {
+    pub name: String,
+    pub config: HashMap<String, String>,
 }
 
 /// NamedContext associates name with context.
