@@ -2,28 +2,17 @@ extern crate failure;
 extern crate k8s_openapi;
 extern crate kubernetes;
 
-use k8s_openapi::v1_10::api::core::v1;
+use k8s_openapi::api::core::v1 as api;
 use kubernetes::client::APIClient;
 use kubernetes::config;
 
 fn main() {
     let kubeconfig = config::incluster_config().expect("failed to load incluster config");
     let kubeclient = APIClient::new(kubeconfig);
-    let req = v1::Pod::list_core_v1_namespaced_pod(
-        "kube-system",
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
-    .expect("failed to define list pod");
+   let (req, _) = api::Pod::list_namespaced_pod("kube-system", Default::default())
+        .expect("failed to create a request");
     let list_pod = kubeclient
-        .request::<v1::PodList>(req)
+        .request::<api::PodList>(req)
         .expect("failed to list up pods");
     println!("{:?}", list_pod);
 }
