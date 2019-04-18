@@ -1,11 +1,12 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
-use std::collections::HashMap;
 
 use failure::Error;
 use serde_yaml;
 
 use config::utils;
+use oauth2;
 
 /// Config stores information to connect remote kubernetes cluster.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -93,7 +94,7 @@ pub struct AuthInfo {
     pub auth_provider: Option<AuthProviderConfig>,
 }
 
-/// AuthProviderConfig stores auth for specified cloud provider
+/// AuthProviderConfig stores auth for specified cloud provider.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AuthProviderConfig {
     pub name: String,
@@ -134,6 +135,21 @@ impl Cluster {
 }
 
 impl AuthInfo {
+    pub fn load_gcp(&mut self) -> Result<bool, Error> {
+        match &self.auth_provider {
+            Some(provider) => {
+                self.token = Some(provider.config["access-token"].clone());
+                if utils::is_expired(&provider.config["expiry"]) {
+                    let client = oauth2::CredentialsClient::new()?;
+                    let token = client.request_token(&vec!["https://www.googleapis.com/auth/cloud-platform".to_string()])?;
+                    self.token = Some(token.access_token);
+                }
+            }
+            None => {}
+        };
+        Ok(true)
+    }
+
     pub fn load_client_certificate(&self) -> Result<Vec<u8>, Error> {
         utils::data_or_file_with_base64(&self.client_certificate_data, &self.client_certificate)
     }

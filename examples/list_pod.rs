@@ -14,5 +14,5 @@ fn main() {
     let list_pod = kubeclient
         .request::<api::PodList>(req)
         .expect("failed to list up pods");
-    println!("{:?}", list_pod);
+    // println!("{:?}", list_pod);
 }
