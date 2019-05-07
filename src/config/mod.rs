@@ -1,4 +1,5 @@
 mod apis;
+mod exec;
 mod incluster_config;
 mod kube_config;
 mod utils;
@@ -39,6 +40,21 @@ pub fn load_kube_config() -> Result<Configuration, Error> {
         .ok_or(format_err!("Unable to load kubeconfig"))?;
 
     let loader = KubeConfigLoader::load(kubeconfig)?;
+    let token = match &loader.user.token {
+        Some(token) => Some(token.clone()),
+        None => {
+            if let Some(exec) = &loader.user.exec {
+                let creds = exec::auth_exec(exec)?;
+                let status = creds
+                    .status
+                    .ok_or(format_err!("exec-plugin response did not contain a status"))?;
+                status.token
+            } else {
+                None
+            }
+        }
+    };
+
     let mut client_builder = Client::builder();
 
     if let Some(ca) = loader.ca() {
@@ -61,7 +77,7 @@ pub fn load_kube_config() -> Result<Configuration, Error> {
     let mut headers = header::HeaderMap::new();
 
     match (
-        utils::data_or_file(&loader.user.token, &loader.user.token_file),
+        utils::data_or_file(&token, &loader.user.token_file),
         (loader.user.username, loader.user.password),
     ) {
         (Ok(token), _) => {

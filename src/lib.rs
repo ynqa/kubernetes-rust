@@ -10,6 +10,7 @@ extern crate http;
 extern crate openssl;
 extern crate reqwest;
 extern crate serde;
+extern crate serde_json;
 extern crate serde_yaml;
 extern crate time;
 extern crate url;
