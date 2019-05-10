@@ -4,18 +4,17 @@ use std::path::PathBuf;
 
 use chrono::Utc;
 use failure::Error;
-use openssl::pkey::{PKey, Private};
-use openssl::sign::Signer;
-use openssl::rsa::Padding;
 use openssl::hash::MessageDigest;
-use reqwest::Client;
+use openssl::pkey::{PKey, Private};
+use openssl::rsa::Padding;
+use openssl::sign::Signer;
 use reqwest::header::CONTENT_TYPE;
+use reqwest::Client;
 use time::Duration;
 use url::form_urlencoded::Serializer;
 
 const GOOGLE_APPLICATION_CREDENTIALS: &str = "GOOGLE_APPLICATION_CREDENTIALS";
 const DEFAULT_GRANT_TYPE: &str = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-
 
 #[derive(Debug, Serialize)]
 struct Header {
@@ -122,18 +121,21 @@ impl CredentialsClient {
         let private_key = PKey::private_key_from_pem(&self.credentials.private_key.as_bytes())?;
         let encoded = &self.jws_encode(
             &Claim::new(&self.credentials, scopes),
-            &Header{
+            &Header {
                 alg: "RS256".to_string(),
                 typ: "JWT".to_string(),
             },
-            private_key)?;
+            private_key,
+        )?;
 
         let body = Serializer::new(String::new())
             .extend_pairs(vec![
                 ("grant_type".to_string(), DEFAULT_GRANT_TYPE.to_string()),
                 ("assertion".to_string(), encoded.to_string()),
-            ]).finish();
-        let token_response: TokenResponse = self.client
+            ])
+            .finish();
+        let token_response: TokenResponse = self
+            .client
             .post(&self.credentials.token_uri)
             .body(body)
             .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -142,7 +144,12 @@ impl CredentialsClient {
         Ok(token_response.to_token())
     }
 
-    fn jws_encode(&self, claim: &Claim, header: &Header, key: PKey<Private>) -> Result<String, Error> {
+    fn jws_encode(
+        &self,
+        claim: &Claim,
+        header: &Header,
+        key: PKey<Private>,
+    ) -> Result<String, Error> {
         let encoded_header = self.base64_encode(serde_json::to_string(&header).unwrap().as_bytes());
         let encoded_claims = self.base64_encode(serde_json::to_string(&claim).unwrap().as_bytes());
         let signature_base = format!("{}.{}", encoded_header, encoded_claims);
@@ -150,7 +157,11 @@ impl CredentialsClient {
         signer.set_rsa_padding(Padding::PKCS1)?;
         signer.update(signature_base.as_bytes())?;
         let signature = signer.sign_to_vec()?;
-        Ok(format!("{}.{}", signature_base, self.base64_encode(&signature)))
+        Ok(format!(
+            "{}.{}",
+            signature_base,
+            self.base64_encode(&signature)
+        ))
     }
 
     fn base64_encode(&self, bytes: &[u8]) -> String {
