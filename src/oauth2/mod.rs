@@ -2,7 +2,7 @@ use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 
-use chrono::Utc;
+use chrono::{Duration, Utc};
 use failure::{format_err, Error};
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
@@ -11,7 +11,6 @@ use openssl::sign::Signer;
 use reqwest::blocking::Client;
 use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
-use time::Duration;
 use url::form_urlencoded::Serializer;
 
 const GOOGLE_APPLICATION_CREDENTIALS: &str = "GOOGLE_APPLICATION_CREDENTIALS";

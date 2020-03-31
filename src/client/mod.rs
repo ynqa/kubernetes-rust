@@ -1,10 +1,9 @@
 use std::sync::Arc;
 
+use super::config::Configuration;
 use failure::{format_err, Error};
 use http;
 use serde::de::DeserializeOwned;
-
-use super::config::Configuration;
 
 /// APIClient requires `config::Configuration` includes client to connect with kubernetes cluster.
 pub struct APIClient {
@@ -32,9 +31,13 @@ impl APIClient {
             other => {
                 return Err(Error::from(format_err!("Invalid method: {}", other)));
             }
-        }
-        .body(body);
+        };
 
-        req.send().await?.json().await.map_err(Error::from)
+        req.body(body)
+            .send()
+            .await?
+            .json()
+            .await
+            .map_err(Error::from)
     }
 }
