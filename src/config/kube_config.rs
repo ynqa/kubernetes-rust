@@ -1,11 +1,11 @@
 use std::path::Path;
 
-use failure::Error;
+use failure::{format_err, Error};
 use openssl::pkcs12::Pkcs12;
 use openssl::pkey::PKey;
 use openssl::x509::X509;
 
-use config::apis::{AuthInfo, Cluster, Config, Context};
+use crate::config::apis::{AuthInfo, Cluster, Config, Context};
 
 /// KubeConfigLoader loads current context, cluster, and authentication information.
 #[derive(Debug)]

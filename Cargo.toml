@@ -1,6 +1,7 @@
 [package]
 name = "kubernetes"
 version = "0.1.0"
+edition = "2018"
 description = "Kubernetes rust client"
 authors = ["ynqa <un.pensiero.vano@gmail.com>"]
 license-file = "LICENSE"
@@ -10,21 +11,27 @@ keywords = ["kubernetes"]
 categories = ["web-programming::http-client"]
 
 [dependencies]
-base64 = "0.9.3"
+base64 = "0.12.0"
 chrono = "0.4.6"
 dirs = "1.0.4"
 failure = "0.1.2"
-http = "0.1.14"
+http = "0.2"
 lazy_static = "1.3.0"
 openssl = "0.10.12"
-reqwest = "0.9.2"
-serde = "1.0.79"
-serde_derive = "1.0.79"
 serde_json = "1.0.39"
 serde_yaml = "0.8.5"
 time = "0.1.42"
 url = "1.7.2"
 
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+
+[dependencies.reqwest]
+version = "0.10.4"
+features = ["json", "blocking", "native-tls"]
+
 [dev-dependencies]
 tempfile = "3.0.4"
-k8s-openapi = { git = "https://github.com/Arnavion/k8s-openapi-codegen", tag = "v0.4.0", features = ["v1_13"] }
+tokio = { version = "0.2", features = ["macros"] }
+k8s-openapi = { git = "https://github.com/Arnavion/k8s-openapi-codegen", tag = "v0.7.0", features = ["v1_15"] }
