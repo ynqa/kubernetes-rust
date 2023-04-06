@@ -5,7 +5,7 @@ mod kube_config;
 mod utils;
 
 use base64;
-use failure::Error;
+use failure::{format_err, Error};
 use reqwest::{header, Certificate, Client, Identity};
 
 use self::kube_config::KubeConfigLoader;

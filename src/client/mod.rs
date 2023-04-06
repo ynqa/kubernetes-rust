@@ -1,24 +1,23 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
-use failure::Error;
+use super::config::Configuration;
+use failure::{format_err, Error};
 use http;
 use serde::de::DeserializeOwned;
 
-use super::config::Configuration;
-
 /// APIClient requires `config::Configuration` includes client to connect with kubernetes cluster.
 pub struct APIClient {
-    configuration: Rc<Configuration>,
+    configuration: Arc<Configuration>,
 }
 
 impl APIClient {
     pub fn new(configuration: Configuration) -> Self {
-        let rc = Rc::new(configuration);
-        APIClient { configuration: rc }
+        let arc = Arc::new(configuration);
+        APIClient { configuration: arc }
     }
 
     /// Returns kubernetes resources binded `Arnavion/k8s-openapi-codegen` APIs.
-    pub fn request<T>(&self, request: http::Request<Vec<u8>>) -> Result<T, Error>
+    pub async fn request<T>(&self, request: http::Request<Vec<u8>>) -> Result<T, Error>
     where
         T: DeserializeOwned,
     {
@@ -32,9 +31,13 @@ impl APIClient {
             other => {
                 return Err(Error::from(format_err!("Invalid method: {}", other)));
             }
-        }
-        .body(body);
+        };
 
-        req.send()?.json().map_err(Error::from)
+        req.body(body)
+            .send()
+            .await?
+            .json()
+            .await
+            .map_err(Error::from)
     }
 }

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use base64;
 use chrono::{DateTime, Utc};
 use dirs::home_dir;
-use failure::Error;
+use failure::{format_err, Error};
 
 const KUBECONFIG: &str = "KUBECONFIG";
 
@@ -68,7 +68,7 @@ fn test_kubeconfig_path() {
 #[cfg(test)]
 mod tests {
     extern crate tempfile;
-    use config::utils;
+    use crate::config::utils;
     use std::io::Write;
 
     #[test]
